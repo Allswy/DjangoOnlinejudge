@@ -16,11 +16,11 @@
 <body>
 
     <!-- 横向导航 -->
-    {% include "share_layout/top_nav.html" %}
+    {% include "share_layout/top_nav.html" with SITE_NAME='Allswy'%}
 
     <div class="container">
         <!-- 纵向导航 -->
-        {% include "share_layout/side_nav.html" %}
+        {% include "share_layout/side_nav.html" with SITE_NAME='Allswy'%}
 
         <!-- 主内容 -->
         <div class="content">
