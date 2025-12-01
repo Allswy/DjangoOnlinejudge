@@ -1,0 +1,40 @@
+{% load static %}
+{% load cache %}
+<!DOCTYPE html>
+<head>
+    {% block header %}
+        <!-- SEO插件会自动生成title、description、keywords等标签 -->
+    {% endblock %}
+
+
+</head>
+
+<body class="home blog custom-font-enabled">
+<div id="page" class="hfeed site">
+    <header id="masthead" class="site-header" role="banner">
+        <hgroup>
+            <h1 class="site-title"><a href="/" title="{{ SITE_NAME }}" rel="home">{{ SITE_NAME }}</a>
+            </h1>
+            <h2 class="site-description">{{ SITE_DESCRIPTION }}</h2>
+        </hgroup>
+        {% include 'share_layout/nav.html' %}
+
+
+    </header><!-- #masthead -->
+    <div id="main" class="wrapper">
+
+        {% block content %}
+        {% endblock %}
+
+
+    </div><!-- #main .wrapper -->
+    {% include 'share_layout/footer.html' %}
+</div><!-- #page -->
+
+{% block footer %}
+{% endblock %}
+
+<!-- 插件body资源 -->
+{% plugin_body_resources %}
+</body>
+</html>
