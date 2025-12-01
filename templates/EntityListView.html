@@ -1,31 +1,22 @@
-{% extends 'share_layout/base.html' %}
-{% load onlinejudge_tags %}
-{% load cache %}
-{% block header %}
-    {% if tag_name %}
-        <title>{{ page_type }}:{{ tag_name }} | {{ SITE_DESCRIPTION }}</title>
-        {% comment %}<meta name="description" content="{{ page_type }}:{{ tag_name }}"/>{% endcomment %}
-    {% else %}
-        <title>{{ SITE_NAME }} | {{ SITE_DESCRIPTION }}</title>
-    {% endif %}
-{% endblock %}
+{% extends "share_layout/base.html" %}
+{% load static %}
+
 {% block content %}
-    <div id="primary" class="site-content">
-        <div id="content" role="main">
-            {% if page_type and tag_name %}
-                <header class="archive-header">
+<div class="container mt-4">
+    <h1>最新文章</h1>
 
-                    <p class="archive-title">{{ page_type }}：<span>{{ tag_name }}</span></p>
-                </header><!-- .archive-header -->
-            {% endif %}
-
-            {% for article in article_list %}
-                {% load_article_detail article True user %}
-            {% endfor %}
-        </div><!-- #content -->
-    </div><!-- #primary -->
-
-{% endblock %}
-{% block sidebar %}
-    {% load_sidebar user linktype %}
+    {% if article_list %}
+        <ul class="article-list">
+        {% for article in article_list %}
+            <li class="mb-3">
+                <h2><a href="{% url 'article_detail' article.id %}">{{ article.title }}</a></h2>
+                <p class="text-muted">{{ article.created_at|date:"Y-m-d H:i" }}</p>
+                <p>{{ article.summary }}</p>
+            </li>
+        {% endfor %}
+        </ul>
+    {% else %}
+        <p>暂无文章。</p>
+    {% endif %}
+</div>
 {% endblock %}

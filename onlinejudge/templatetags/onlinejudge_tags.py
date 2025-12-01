@@ -2,12 +2,15 @@ import logging
 import re
 from abc import abstractmethod
 
+
+from django import template
 from django.conf import settings
-from django.core.exceptions import ValidationError
-from django.db import models
+from django.db.models import Q
+from django.shortcuts import get_object_or_404
+from django.template.defaultfilters import stringfilter
+from django.templatetags.static import static
 from django.urls import reverse
-from django.utils.timezone import now
-from django.utils.translation import gettext_lazy as _
+from django.utils.safestring import mark_safe
 from mdeditor.fields import MDTextField
 from uuslug import slugify
 
@@ -16,6 +19,8 @@ from djangooj.utils import get_current_site
 
 # Create your models here.
 logger = logging.getLogger(__name__)
+register = template.Library()
+
 
 @register.inclusion_tag('onlinejudge/tags/entity_info.html')
 def load_article_detail(article, isindex, user):
@@ -25,14 +30,18 @@ def load_article_detail(article, isindex, user):
     :param isindex:是否列表页，若是列表页只显示摘要
     :return:
     """
-    from djangoblog.utils import get_blog_setting
-    blogsetting = get_blog_setting()
 
     return {
         'article': article,
         'isindex': isindex,
         'user': user,
-        'open_site_comment': blogsetting.open_site_comment,
     }
+
+
+@register.simple_tag
+def get_markdown_toc(content):
+    from djangooj.utils import CommonMarkdown
+    body, toc = CommonMarkdown.get_markdown_with_toc(content)
+    return mark_safe(toc)
 
 

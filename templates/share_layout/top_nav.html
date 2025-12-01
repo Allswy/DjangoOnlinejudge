@@ -1,0 +1,11 @@
+{% load static %}
+<nav style="background:#333; color:#fff; padding:10px 20px; display:flex; align-items:center;">
+    <div style="flex:1;">
+        <a href="{% url 'onlinejudge:index' %}" style="color:#fff; text-decoration:none; font-weight:bold;">{{ SITE_NAME }}</a>
+    </div>
+    <ul style="list-style:none; display:flex; margin:0; padding:0;">
+        <li style="margin-left:20px;"><a href="#" style="color:#fff; text-decoration:none;">题库</a></li>
+        <li style="margin-left:20px;"><a href="#" style="color:#fff; text-decoration:none;">比赛</a></li>
+        <li style="margin-left:20px;"><a href="#" style="color:#fff; text-decoration:none;">讨论</a></li>
+    </ul>
+</nav>

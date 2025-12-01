@@ -96,14 +96,7 @@ class Article(BaseModel):
     article_order = models.IntegerField(
         _('order'), blank=False, null=False, default=0)
     show_toc = models.BooleanField(_('show toc'), blank=False, null=False, default=False)
-    category = models.ForeignKey(
-        'Category',
-        verbose_name=_('category'),
-        on_delete=models.CASCADE,
-        blank=False,
-        null=False)
-    ArticleTags = models.ManyToManyField('ArticleTag', verbose_name=_('tags'), blank=True)
-    ProblemTag = models.ManyToManyField('Tag', verbose_name=_('tag'), blank=True)
+
 
     def body_to_string(self):
         return self.body
@@ -125,12 +118,6 @@ class Article(BaseModel):
             'day': self.creation_time.day
         })
 
-    @cache_decorator(60 * 60 * 10)
-    def get_category_tree(self):
-        tree = self.category.get_category_tree()
-        names = list(map(lambda c: (c.name, c.get_absolute_url()), tree))
-
-        return names
 
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
@@ -138,18 +125,6 @@ class Article(BaseModel):
     def viewed(self):
         self.views += 1
         self.save(update_fields=['views'])
-
-    def comment_list(self):
-        cache_key = 'article_comments_{id}'.format(id=self.id)
-        value = cache.get(cache_key)
-        if value:
-            logger.info('get article comments:{id}'.format(id=self.id))
-            return value
-        else:
-            comments = self.comment_set.filter(is_enable=True).order_by('-id')
-            cache.set(cache_key, comments, 60 * 100)
-            logger.info('set article comments:{id}'.format(id=self.id))
-            return comments
 
     def get_admin_url(self):
         info = (self._meta.app_label, self._meta.model_name)
@@ -165,16 +140,6 @@ class Article(BaseModel):
     def prev_article(self):
         # 前一篇
         return Article.objects.filter(id__lt=self.id, status='p').first()
-
-    def get_first_image_url(self):
-        """
-        Get the first image url from article.body.
-        :return:
-        """
-        match = re.search(r'!\[.*?\]\((.+?)\)', self.body)
-        if match:
-            return match.group(1)
-        return ""
 
 class Problem(BaseModel):
     STATUS_CHOICES = (
@@ -211,6 +176,14 @@ class Problem(BaseModel):
         on_delete=models.CASCADE
     )
     problem_tags = models.ManyToManyField('ProblemTag', verbose_name=_('tag'), blank=True)
+
+    def get_absolute_url(self):
+        return reverse('blog:detailbyid', kwargs={
+            'article_id': self.id,
+            'year': self.creation_time.year,
+            'month': self.creation_time.month,
+            'day': self.creation_time.day
+        })
 
 class Tag(BaseModel):
     name = models.CharField(_('tag name'), max_length=30, unique=True)
@@ -299,14 +272,6 @@ class OnlinejudgeSettings(models.Model):
     def __str__(self):
         return self.site_name
 
-    def clean(self):
-        if BlogSettings.objects.exclude(id=self.id).count():
-            raise ValidationError(_('There can only be one configuration'))
-
-    def save(self, *args, **kwargs):
-        super().save(*args, **kwargs)
-        from djangoblog.utils import cache
-        cache.clear()
 
 
 

@@ -21,7 +21,5 @@ import onlinejudge
 urlpatterns = [
     path('admin/', admin.site.urls),
     re_path(r'', include('onlinejudge.urls', namespace = 'onlinejudge')),
-    re_path(r'', include('account.urls', namespace = 'account') ),
-    re_path(r'', include('judge', namespace = 'judge') ),
 
 ]
